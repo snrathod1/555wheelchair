@@ -4,6 +4,9 @@ from motorsAlgorithm import mixing, printDiagnostics
 import motor
 from mapping import exponentialMap
 
+
+
+
 def run():
     # Create Global Variables
     throttle   = 0
@@ -360,15 +363,15 @@ def run():
                 msg = []
 
 
-
-while(True):
-    try:
-        run()
-    except KeyboardInterrupt:
-        print("Quiting...")
-        quit()
-    except:
-        pass
+if __name__ == "__main__":
+    while(True):
+        try:
+            run()
+        except KeyboardInterrupt:
+            print("Quiting...")
+            quit()
+        except:
+            pass
 
 
 
