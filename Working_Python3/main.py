@@ -1,5 +1,6 @@
 import gamepad15
 import threading
+import serial
 ##import sensor code
 
 ##GPIO setup
@@ -11,23 +12,31 @@ class myThread (threading.Thread):
         self.threadID = threadID
         self.name = name
     def run(self):
-        print("Starting" + self.name)
+        print("Starting " + self.name)
 
 switch_thread = myThread(1, "switch_thread")
 
 
-def run_wheelchair(threadName):
-    while(True):
-        # controller mode
-        if (switch == 1):
-            gamepad15.run()
-            # sensor mode
-        elif (switch == 0):
-            #run sensor code
+def run_wheelchair(): #threadName):
+    try:
+        while(True):
+            # controller mode
+            if (True):
+                gamepad15.run()
+                # sensor mode
+            else:
+                pass
+                #run sensor code
 
-        #if emergency stop
-        #switch_thread.exit()
+            #if emergency stop
+            #switch_thread.exit()
+    except Exception as ex:
+        print(ex)
+        print("Quitting...")
+        quit()
 
+
+# Begin Main
 switch_thread.start()
-        
+run_wheelchair()        
 
