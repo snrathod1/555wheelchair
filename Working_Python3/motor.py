@@ -9,18 +9,10 @@ GPIO.setwarnings(False)
 def my_callback(self):
     time.sleep(.1)
     if(GPIO.input(switch_Pin)):
-        flag.flag = True
-        #main.setFlag(True)
-        # print("flag = True")
-        #sensorThread.start()
-        #gamepadThread._stop()        
+        flag.flag = True      
         print("Enabling Joystick Mode")
     else:
         flag.flag = False
-        #main.setFlag(False)
-        # print("flag = False")
-        #sensorThread._stop()
-        #gamepadThread.start()
         print("Enabling Self-Driving Mode")
 
 
@@ -55,6 +47,7 @@ GPIO.setup(rightMotorBrk_Pin, GPIO.OUT)
 
 GPIO.setup(switch_Pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.add_event_detect(switch_Pin, GPIO.BOTH, callback=my_callback, bouncetime=250)
+flag.flag = GPIO.input(switch_Pin)
 #callback function should switch between sensor code and control code
 
 # Set Dir pins 
@@ -118,7 +111,10 @@ def setLeftGlobals(leftSpeed):
         leftMotorDir = False  # REVERSE
     else:
         leftMotorDir = True      # FORWARD
-    leftMotorPWM = abs(leftSpeed)
+    if(abs(leftSpeed) < 15):
+        leftMotorPWM = 0
+    else:    
+        leftMotorPWM = abs(leftSpeed)
     setLeftMotor()
     return
 
@@ -130,7 +126,10 @@ def setRightGlobals(rightSpeed):
         rightMotorDir = False  # REVERSE
     else:
         rightMotorDir = True   # FORWARD
-    rightMotorPWM = abs(rightSpeed)
+    if(abs(rightSpeed) < 15):
+        rightMotorPWM = 0
+    else:
+        rightMotorPWM = abs(rightSpeed)
     setRightMotor()
     return
 
