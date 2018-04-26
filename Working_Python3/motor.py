@@ -3,6 +3,18 @@ import RPi.GPIO as GPIO
 
 GPIO.setwarnings(False)
 
+def my_callback():
+    global flag
+    if(GPIO.input(switch_Pin)):
+        flag = True
+        print("flag = True")
+    else:
+        flag = False
+        print("flag = False")
+
+
+
+
 # Initialize Globals
 leftMotorDir  = True             # Let Dir = True  be FORWARD MOTION
 leftMotorPWM  = 0                # Let Dir = False be REVERSE MOTION
@@ -16,6 +28,7 @@ leftMotorBrk_Pin  = 13
 rightMotorDir_Pin = 15
 rightMotorPWM_Pin = 16
 rightMotorBrk_Pin = 18
+switch_Pin        = 19
 frequency         = 100 # Hz 
 
 # Declare the Pin Mapping we will use
@@ -29,6 +42,10 @@ GPIO.setup(leftMotorBrk_Pin,  GPIO.OUT)
 GPIO.setup(rightMotorDir_Pin, GPIO.OUT) 
 GPIO.setup(rightMotorPWM_Pin, GPIO.OUT)
 GPIO.setup(rightMotorBrk_Pin, GPIO.OUT)
+
+GPIO.setup(switch_Pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.add_event_detect(switch_Pin, GPIO.BOTH, callback=my_callback)
+#callback function should switch between sensor code and control code
 
 # Set Dir pins 
 GPIO.output(leftMotorDir_Pin,  GPIO.HIGH)

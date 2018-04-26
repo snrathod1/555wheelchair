@@ -1,42 +1,58 @@
 import gamepad15
 import threading
 import serial
+import motor
 ##import sensor code
-
-##GPIO setup
-
-
-class myThread (threading.Thread):
-    def __init__(self, threadID, name):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-    def run(self):
-        print("Starting " + self.name)
-
-switch_thread = myThread(1, "switch_thread")
+flag = True
 
 
-def run_wheelchair(): #threadName):
-    try:
+
+def readSensors():
+
+    s=serial.Serial('/dev/ttyUSB0',9600)
+
+    while True:
+        line = s.readline()
+        leftSpeed,rightSpeed = line.split(',')
+        leftSpeed = int(leftSpeed)
+        rightSpeed = int(rightSpeed)
+        motor.setLeftGlobals(leftSpeed)
+        motor.setRightGlobals(rightSpeed)
+
+    s.close()
+
+
+
+# Main Functionality that switches between threads
+def run_wheelchair():
+        global flag
+        #print('before')
+        sensorThread  = threading.Thread(target=readSensors)
+        #print('middle')
+        gamepadThread = threading.Thread(target=gamepad15.run)
+        
+
+
+       # print(flag)
         while(True):
-            # controller mode
-            if (True):
-                gamepad15.run()
-                # sensor mode
-            else:
-                pass
-                #run sensor code
-
-            #if emergency stop
-            #switch_thread.exit()
-    except Exception as ex:
-        print(ex)
-        print("Quitting...")
-        quit()
-
+            if (flag):  # controller mode
+                #print("inside if(flag)")
+                try:
+                    sensorThread._stop()
+                    gamepadThread.start()
+                except RuntimeError:
+                    continue
+            else:       # sensor code
+                try:
+                    gamepadThread._stop()
+                    sensorThread.start()
+                except RuntimeError:
+                    continue
 
 # Begin Main
-switch_thread.start()
+
 run_wheelchair()        
 
+
+
+    
