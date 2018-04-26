@@ -1,27 +1,46 @@
 # initialize_RPi.GPIO()
 import RPi.GPIO as GPIO
 import time
-#import main
-import flag
+import gamepad15
+import threading
+import serial
+import motor
+##import sensor code
+flag = True
+
 
 GPIO.setwarnings(False)
 
+def readSensors():
+
+    s=serial.Serial('/dev/ttyUSB0',9600)
+
+    while True:
+        line = s.readline()
+        leftSpeed,rightSpeed = line.split(',')
+        leftSpeed = int(leftSpeed)
+        rightSpeed = int(rightSpeed)
+        motor.setLeftGlobals(leftSpeed)
+        motor.setRightGlobals(rightSpeed)
+
+    s.close()
+
+
 def my_callback(self):
+    global flag
     time.sleep(.1)
     if(GPIO.input(switch_Pin)):
-        flag.flag = True
-        #main.setFlag(True)
+        flag = True
         # print("flag = True")
-        #sensorThread.start()
-        #gamepadThread._stop()        
-        #print("Enabling Self-Driving Mode")
+        sensorThread.start()
+        gamepadThread._stop()        
+        print("Enabling Self-Driving Mode")
     else:
-        flag.flag = False
-        #main.setFlag(False)
+        flag = False
         # print("flag = False")
-        #sensorThread._stop()
-        #gamepadThread.start()
-        #print("Enabling Joystick Mode")
+        sensorThread._stop()
+        gamepadThread.start()
+        print("Enabling Joystick Mode")
 
 
 
@@ -137,58 +156,21 @@ def setRightGlobals(rightSpeed):
 
 
 
-#-----------------------------------------------------------------------------------------------------------------
+# Main Functionality that switches between threads
+def run_wheelchair():
+        global flag
+        #print('before')
+        #sensorThread  = threading.Thread(target=readSensors)
+        #print('middle')
+        #gamepadThread = threading.Thread(target=gamepad15.run)
+        
+       # print(flag)
+        while(True):
+            pass
+
+
+
 # Begin Main
-def run():
-    while(True):
-        userInput = input("Enter Speeds from -255 to 255 for <Left,Right> Motors.  Press ('q' to quit): ").upper()
-        if(userInput == 'Q' or userInput == 'QUIT' or userInput == 'EXIT'):
-            break
-        else:
-            try:
-                leftInput,rightInput = userInput.split(",")
-
-                leftInput  = int(leftInput)
-                rightInput = int(rightInput)
-            
-                if(leftInput < -255):
-                    leftInput = -255
-                if(leftInput > 255):
-                    leftInput = 255
-                if(rightInput < -255):
-                    rightInput = -255
-                if(rightInput > 255):
-                    rightInput = 255
-
-                print("Left: " + str(leftInput) + ",  Right: " + str(rightInput) )
-            
-                setLeftGlobals(leftInput)
-                setRightGlobals(rightInput)
-    
-                print("\tleftMotorDir  = " + str(leftMotorDir)  + ", leftMotorPWM  = " + str(leftMotorPWM) )
-                print("\trightMotorDir = " + str(rightMotorDir) + ", rightMotorPWM = " + str(rightMotorPWM) )
-
-                setLeftMotor()
-                setRightMotor()
-
-                        
-
-                # print("Setting duty cycle to " + str(dutyCycle))
-                # leftMotor.ChangeDutyCycle(dutyCycle)
-                # rightMotor.ChangeDutyCycle(dutyCycle)
-            except Exception as ex:
-                print(ex)
-                print("Error.  Exiting now...")
-                break
-
-
-    leftMotor.stop()
-    rightMotor.stop()
-    GPIO.cleanup()
-    print("Done.")
-    
-    
-
-
-if __name__=='__main__':
-    run()
+sensorThread  = threading.Thread(target=readSensors)
+gamepadThread = threading.Thread(target=gamepad15.run)
+run_wheelchair() 

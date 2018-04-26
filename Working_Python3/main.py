@@ -1,9 +1,20 @@
 import gamepad15
 import threading
 import serial
-import motor
+import time
+#import motor
 ##import sensor code
-flag = True
+#flag = True
+import flag
+
+def setFlag(boolean):
+    global flag
+    if(boolean):
+        flag = True
+        print("Flag = " + str(flag))
+    else:
+        flag = False
+        print("Flag = " + str(flag))
 
 
 
@@ -25,33 +36,42 @@ def readSensors():
 
 # Main Functionality that switches between threads
 def run_wheelchair():
-        global flag
+        #global flag
         #print('before')
-        sensorThread  = threading.Thread(target=readSensors)
+        #sensorThread  = threading.Thread(target=readSensors)
         #print('middle')
-        gamepadThread = threading.Thread(target=gamepad15.run)
+        #gamepadThread = threading.Thread(target=gamepad15.run)
         
 
 
        # print(flag)
         while(True):
-            if (flag):  # controller mode
-                #print("inside if(flag)")
+            print(flag.flag)
+            time.sleep(.2)
+            if (flag.flag):  # controller mode
                 try:
                     sensorThread._stop()
                     gamepadThread.start()
-                except RuntimeError:
+                    #print("Enabling Joystick Mode")
+                except RuntimeError or AssertionError:
+                    #print("In 'if except'")                    
                     continue
             else:       # sensor code
                 try:
                     gamepadThread._stop()
                     sensorThread.start()
-                except RuntimeError:
+                    #print("Enabling Self-Driving Mode")
+                except RuntimeError or AssertionError:
+                    #print("In 'else except'")
                     continue
 
 # Begin Main
+if __name__ == "__main__":
+    import motor
 
-run_wheelchair()        
+    sensorThread  = threading.Thread(target=readSensors)
+    gamepadThread = threading.Thread(target=gamepad15.run)
+    run_wheelchair()        
 
 
 
