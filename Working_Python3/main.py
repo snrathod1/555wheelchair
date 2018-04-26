@@ -23,18 +23,20 @@ def readSensors():
     s=serial.Serial('/dev/ttyUSB0',9600)
 
     while True:
-        line = s.readline()
-        leftSpeed,rightSpeed = line.split(',')
-        leftSpeed = int(leftSpeed)
-        rightSpeed = int(rightSpeed)
-        motor.setLeftGlobals(leftSpeed)
-        motor.setRightGlobals(rightSpeed)
+        while not flag.flag:
+            line = s.readline()
+            leftSpeed,rightSpeed = line.split(',')
+            leftSpeed = int(leftSpeed)
+            rightSpeed = int(rightSpeed)
+            motor.setLeftGlobals(leftSpeed)
+            motor.setRightGlobals(rightSpeed)
 
     s.close()
 
 
 
 # Main Functionality that switches between threads
+'''
 def run_wheelchair():
         #global flag
         #print('before')
@@ -50,28 +52,33 @@ def run_wheelchair():
             time.sleep(.2)
             if (flag.flag):  # controller mode
                 try:
-                    sensorThread._stop()
-                    gamepadThread.start()
+                    #sensorThread._stop()
+                    #gamepadThread.start()
                     #print("Enabling Joystick Mode")
                 except RuntimeError or AssertionError:
                     #print("In 'if except'")                    
                     continue
             else:       # sensor code
                 try:
-                    gamepadThread._stop()
-                    sensorThread.start()
+                    #gamepadThread._stop()
+                    #sensorThread.start()
                     #print("Enabling Self-Driving Mode")
                 except RuntimeError or AssertionError:
                     #print("In 'else except'")
                     continue
+'''
 
 # Begin Main
 if __name__ == "__main__":
     import motor
 
-    sensorThread  = threading.Thread(target=readSensors)
-    gamepadThread = threading.Thread(target=gamepad15.run)
-    run_wheelchair()        
+    sensorThread  = threading.Thread(target=readSensors).start()
+    gamepadThread = threading.Thread(target=gamepad15.run).start()
+
+    #sensorThread.daemon  = True
+    #gamepadThread.daemon = True
+
+    # run_wheelchair()        
 
 
 

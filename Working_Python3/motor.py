@@ -14,14 +14,14 @@ def my_callback(self):
         # print("flag = True")
         #sensorThread.start()
         #gamepadThread._stop()        
-        #print("Enabling Self-Driving Mode")
+        print("Enabling Joystick Mode")
     else:
         flag.flag = False
         #main.setFlag(False)
         # print("flag = False")
         #sensorThread._stop()
         #gamepadThread.start()
-        #print("Enabling Joystick Mode")
+        print("Enabling Self-Driving Mode")
 
 
 
